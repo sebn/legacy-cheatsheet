@@ -1,0 +1,61 @@
+digraph G {
+  test_change [label="Try to test and change a method"];
+  test_change -> extract_and_override_call [label="depends on problematic static method"];
+  test_change -> introduce_static_setter [label="depends on singleton"];
+  test_change -> encapsulate_global_reference [label="depends on globals"];
+  test_change -> can_modify_parameter_class [label="some parameter is hard to instanciate"];
+  test_change -> can_modify_parameter_class [label="need to test the effect of the method on the parameter"];
+  test_change -> does_method_use_instance_data [label="class is hard to instanciate"];
+  test_change -> is_it_a_constructor [label="method instanciates problematic objects"];
+
+  extract_and_override_call [label="Extract and Override Call"];
+  extract_and_override_call -> extract_and_override_getter [label="too many problematic methods on the same object"];
+
+  encapsulate_global_reference [label="Encapsulate Global Reference"];
+  encapsulate_global_reference -> link_substitution [label="too much work/risk", color="orange", fontcolor="orange"];
+  encapsulate_global_reference -> introduce_static_setter [label="then", color="gray", fontcolor="gray"];
+  encapsulate_global_reference -> parameterize_method [label="then", color="gray", fontcolor="gray"];
+  encapsulate_global_reference -> parameterize_constructor [label="then", color="gray", fontcolor="gray"];
+
+  can_modify_parameter_class [label="Can I modify the parameter class?"];
+  can_modify_parameter_class -> extract_interface [label="yes"];
+  can_modify_parameter_class -> adapt_parameter [label="no"];
+
+  extract_interface [label="Extract Interface", color="darkgreen", fontcolor="darkgreen"];
+  extract_interface -> link_substitution [label="language has no interfaces", color="orange", fontcolor="orange"];
+  extract_interface -> extract_implementer [label="name is already used by class"];
+  extract_interface -> adapt_parameter [label="counter productive"];
+
+  does_method_use_instance_data [label="Does the method use instance data?"];
+  does_method_use_instance_data -> break_out_method_object [label="yes"];
+  does_method_use_instance_data -> is_instance_data_less_method_large [label="no"];
+
+  is_instance_data_less_method_large [label="Is the method large?"];
+  is_instance_data_less_method_large -> break_out_method_object [label="yes"];
+  is_instance_data_less_method_large -> expose_static_method [label="no"];
+
+  is_it_a_constructor [label="Is it a constructor?"];
+  is_it_a_constructor -> parameterize_constructor [label="yes"];
+  is_it_a_constructor -> parameterize_method [label="no"];
+
+  parameterize_method [label="Parameterize Method"];
+  parameterize_method -> extract_and_override_factory_method [label="dependency risk"];
+
+  extract_and_override_factory_method [label="Extract and Override Factory Method"];
+  extract_and_override_factory_method -> is_object_used_in_constructor [label="can't in C++"];
+
+  is_object_used_in_constructor [label="Is the instanciated object used in the constructor?"];
+  is_object_used_in_constructor -> supersede_instance_variable [label="yes"];
+  is_object_used_in_constructor -> extract_and_override_getter [label="no"];
+
+  extract_and_override_getter [label="Extract and Override Getter"];
+  supersede_instance_variable [label="Supersede Instance Variable"];
+  link_substitution [label="Link Substitution", color="orange", fontcolor="orange"];
+  adapt_parameter [label="Adapt Parameter"];
+  extract_implementer [label="Extract Implementer"];
+  break_out_method_object [label="Break Out Method Object"];
+  expose_static_method [label="Expose Static Method"];
+  introduce_static_setter [label="Introduce Static Setter"];
+  parameterize_constructor [label="Parameterize Constructor"];
+}
+
